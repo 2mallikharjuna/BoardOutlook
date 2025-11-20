@@ -1,49 +1,70 @@
-﻿using Polly;
-using Polly.Extensions.Http;
-using Microsoft.Extensions.Options;
+﻿using BoardOutlook.Infrastructure.Configuration;
 using BoardOutlook.Infrastructure.Repositories;
-using BoardOutlook.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Extensions.Http;
+using Polly.Registry;
+using System.Net;
 
 namespace BoardOutlook.Api.App_start
 {
     public static class HttpClientExtensions
     {
-        public static IServiceCollection AddHttpClients(this IServiceCollection services)
+        /// <summary>
+        /// configure API settings        
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection ConfigurePollySettings(this IServiceCollection services)
         {
-            services.AddHttpClient<IMarketDataRepository, MarketDataRepository>()
-                .ConfigureHttpClient((sp, client) =>
-                {
-                    var settings = sp.GetRequiredService<IOptions<ExternalApiSettings>>().Value;
-                    client.BaseAddress = new Uri(settings.BaseUrl);
-                    client.Timeout = TimeSpan.FromSeconds(settings.TimeoutSeconds);
-                })
-                // Retry policy
-                .AddPolicyHandler((sp, request) =>
-                {
-                    var settings = sp.GetRequiredService<IOptions<ExternalApiSettings>>().Value;
-                    var polly = settings.HttpOptions;
+            var policyRegistry = new PolicyRegistry();
 
-                    return HttpPolicyExtensions
-                        .HandleTransientHttpError()
-                        .WaitAndRetryAsync(
-                            retryCount: polly.RetryCount,
-                            sleepDurationProvider: retryAttempt =>
-                                TimeSpan.FromSeconds(Math.Pow(polly.RetryBaseDelaySeconds, retryAttempt))
-                        );
-                })
-                // Circuit breaker policy
-                .AddPolicyHandler((sp, request) =>
-                {
-                    var settings = sp.GetRequiredService<IOptions<ExternalApiSettings>>().Value;
-                    var polly = settings.HttpOptions;
 
-                    return HttpPolicyExtensions
-                        .HandleTransientHttpError()
-                        .CircuitBreakerAsync(
-                            handledEventsAllowedBeforeBreaking: polly.CircuitBreakerFailures,
-                            durationOfBreak: TimeSpan.FromSeconds(polly.CircuitBreakerDurationSeconds)
-                        );
-                });
+            // Fallback Policy — Handle 404 gracefully          
+            var fallback404 = Policy<HttpResponseMessage>
+                .HandleResult(r => r.StatusCode == HttpStatusCode.NotFound)
+                .FallbackAsync(
+                    fallbackValue: new HttpResponseMessage(HttpStatusCode.NotFound),
+                    onFallbackAsync: async (outcome, context) =>
+                    {
+                        Console.WriteLine("404 encountered → Ignored and continuing.");
+                    });
+
+
+            // 2️⃣ Retry Policy — Only transient failures         
+            var retryPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()                     // HttpRequestException, 5xx, 408
+                .OrResult(r => r.StatusCode == HttpStatusCode.TooManyRequests) // 429
+                                                                               // DO NOT add 404 here
+                .WaitAndRetryAsync(
+                    retryCount: 3,
+                    sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+                    onRetry: (outcome, ts, attempt, ctx) =>
+                    {
+                        Console.WriteLine($"Retry {attempt} due to {outcome.Result?.StatusCode}");
+                    });
+
+
+            // Circuit Breaker — Only on transient failures            
+            var circuitBreakerPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(r => r.StatusCode == HttpStatusCode.TooManyRequests) // 429
+                                                                               // DO NOT include 404 here
+                .CircuitBreakerAsync(
+                    handledEventsAllowedBeforeBreaking: 5,
+                    durationOfBreak: TimeSpan.FromSeconds(30));
+
+            // Combine Policies            
+            var combinedPolicy = fallback404
+                .WrapAsync(retryPolicy)
+                .WrapAsync(circuitBreakerPolicy);
+
+            policyRegistry.Add("DefaultPolicy", combinedPolicy);
+            policyRegistry.Add("Fallback404", fallback404);
+            policyRegistry.Add("RetryPolicy", retryPolicy);
+            policyRegistry.Add("CircuitBreakerPolicy", circuitBreakerPolicy);
+
+            services.AddSingleton<IPolicyRegistry<string>>(policyRegistry);
 
             return services;
         }

@@ -78,8 +78,6 @@ namespace BoardOutlook.Infrastructure.Common
 
         private static StringContent CreateJson(object value) =>
             new(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
-
-        
         
     }
 

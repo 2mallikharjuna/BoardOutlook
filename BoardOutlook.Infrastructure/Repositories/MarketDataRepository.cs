@@ -96,8 +96,8 @@ namespace BoardOutlook.Infrastructure.Repositories
             return response.Select(e => new Executive(
                 cik: e.Cik,
                 symbol: new CompanySymbol(e.Symbol),
-                companyName: e.CompanyName,
-                industry: new Industry(e.IndustryTitle),
+                companyName: e.CompanyName ?? "",
+                industry: e.IndustryTitle,
                 acceptedDate: DateTime.Parse(e.AcceptedDate),
                 filingDate: DateTime.Parse(e.FilingDate),
                 nameAndPosition: e.NameAndPosition,

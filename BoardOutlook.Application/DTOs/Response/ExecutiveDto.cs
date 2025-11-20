@@ -1,6 +1,4 @@
 ﻿using BoardOutlook.Domain.Entities;
-using Polly.Caching;
-using System;
 
 namespace BoardOutlook.Application.DTOs.Response
 {
@@ -17,19 +15,7 @@ namespace BoardOutlook.Application.DTOs.Response
         public decimal? AllOtherCompensation { get; set; }
         public decimal TotalCompensation { get; set; }
 
-        /// <summary>
-        /// Determines if the executive's total compensation exceeds a given threshold percentage over the industry average.
-        /// </summary>
-        /// <param name="averageCompensation">Industry average compensation.</param>
-        /// <param name="thresholdPercentage">Threshold percentage (e.g., 10 for 10%).</param>
-        /// <returns>True if total compensation is above the threshold, otherwise false.</returns>
-        public bool IsCompensationAboveThreshold(decimal averageCompensation, decimal thresholdPercentage)
-        {
-            if (averageCompensation <= 0 || thresholdPercentage < 0) return false;
-
-            var threshold = averageCompensation * (1 + thresholdPercentage / 100);
-            return TotalCompensation >= threshold;
-        }
+        
 
         // Executive → ExecutiveDto
         public static ExecutiveDto ToDto(Executive executive) =>
@@ -38,8 +24,8 @@ namespace BoardOutlook.Application.DTOs.Response
                 CompanySymbol = executive.Symbol.Value,
                 Name = executive.NameAndPosition,
                 Position = executive.NameAndPosition, // Split or parse name/position if needed
-                Salary = executive.Salary,
-                Bonus = executive.Bonus,
+                Salary = executive.Salary ?? 0,
+                Bonus = executive.Bonus ?? 0,
                 StockAward = executive.StockAward,
                 IncentivePlanCompensation = executive.IncentivePlanCompensation,
                 AllOtherCompensation = executive.AllOtherCompensation,

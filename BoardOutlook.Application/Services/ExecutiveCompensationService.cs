@@ -127,60 +127,36 @@ namespace BoardOutlook.Application.Services
         }
 
 
-        // ---------------------------------------------
-        // MAIN METHOD
-        // ---------------------------------------------
+        /// <summary>
+        /// GetHighPaidExecutivesAsync
+        /// </summary>
+        /// <param name="exchange"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+                
         public async Task<IEnumerable<ExecutiveCompensationResultDto>> GetHighPaidExecutivesAsync(string exchange, CancellationToken ct = default)
         {
-            var results = new List<ExecutiveCompensationResultDto>();
-
             try
             {
                 // Validate input
                 if (string.IsNullOrWhiteSpace(exchange))
                 {
                     _logger.LogWarning("Exchange cannot be null or empty.");
-                    return results;
+                    return Enumerable.Empty<ExecutiveCompensationResultDto>();
                 }
 
                 // STEP 1 — FETCH COMPANIES FOR THE EXCHANGE
-                var companies = await GetCompaniesAsync(exchange, ct);
+                var companies = await _companiesHandler.ExecuteAsync(new GetAsxCompanyQuery(exchange), ct);
                 if (!companies.Any())
                 {
                     _logger.LogInformation("No companies found for exchange {Exchange}", exchange);
-                    return results;
+                    return Enumerable.Empty<ExecutiveCompensationResultDto>();
                 }
 
-                foreach (var company in companies)
-                {
-                    ct.ThrowIfCancellationRequested(); // Respect cancellation
+                // STEP 2 — PROCESS COMPANIES IN PARALLEL with SemaphoreSlim
+                var results = await ProcessCompaniesAsync(companies, ct, maxDegreeOfParallelism: 5);
 
-                    // STEP 2 — FETCH EXECUTIVES FOR EACH COMPANY
-                    var executives = await GetExecutivesAsync(company.Symbol, ct);
-                    if (!executives.Any())
-                        continue;
-
-                    // STEP 3 — FETCH INDUSTRY BENCHMARK
-                    var benchmark = await GetIndustryBenchmarkAsync(company.Name, ct);
-                    if (benchmark == null || benchmark.AverageCompensation <= 0)
-                        continue;
-
-                    var averageComp = benchmark.AverageCompensation;
-
-                    // STEP 4 — FILTER EXECUTIVES ABOVE THRESHOLD (10% above industry average)
-                    foreach (var exec in executives)
-                    {
-                        // Use domain method if available
-                        if (exec.IsCompensationAboveThreshold(averageComp, 10m))
-                        {
-                            results.Add(new ExecutiveCompensationResultDto(
-                                nameAndPosition: $"{exec.Name}, {exec.Position}",
-                                totalCompensation: exec.TotalCompensation,
-                                industryAverage: averageComp
-                            ));
-                        }
-                    }
-                }
+                return results;
             }
             catch (OperationCanceledException)
             {
@@ -190,15 +166,14 @@ namespace BoardOutlook.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error in GetHighPaidExecutivesAsync.");
+                return Enumerable.Empty<ExecutiveCompensationResultDto>();
             }
-
-            return results;
         }
 
         public async Task<List<ExecutiveCompensationResultDto>> ProcessCompaniesAsync(
              IEnumerable<Company> companies,
              CancellationToken ct,
-             int maxDegreeOfParallelism = 5) // adjust based on system/API limits
+             int maxDegreeOfParallelism = 20) // adjust based on system/API limits
         {
             var results = new ConcurrentBag<ExecutiveCompensationResultDto>();
             var semaphore = new SemaphoreSlim(maxDegreeOfParallelism);
@@ -211,29 +186,31 @@ namespace BoardOutlook.Application.Services
                     ct.ThrowIfCancellationRequested();
 
                     // STEP 2 — FETCH EXECUTIVES FOR EACH COMPANY
-                    var executives = await GetExecutivesAsync(company.Symbol, ct);
+                    var executives = await _executivesHandler.ExecuteAsync(new GetExecutivesQuery(company.Symbol), ct);
                     if (!executives.Any())
                         return;
-
-                    // STEP 3 — FETCH INDUSTRY BENCHMARK
-                    var benchmark = await GetIndustryBenchmarkAsync(company.Name, ct);
-                    if (benchmark == null || benchmark.AverageCompensation <= 0)
-                        return;
-
-                    var averageComp = benchmark.AverageCompensation;
-
-                    // STEP 4 — FILTER EXECUTIVES ABOVE THRESHOLD (10% above industry average)
+                    
                     foreach (var exec in executives)
                     {
+                        _logger.LogDebug("Processing Executive: {Name} of Company: {Company}", exec.NameAndPosition, company.Name);
+
+                        // STEP 3 — FETCH INDUSTRY BENCHMARK
+                        var benchmark = await GetIndustryBenchmarkAsync(exec.IndustryTitle, ct);
+                        if (benchmark == null || benchmark.AverageCompensation <= 0)
+                            return;
+
+                        var averageComp = benchmark.AverageCompensation;
+                        // STEP 4 — FILTER EXECUTIVES ABOVE THRESHOLD (10% above industry average)
                         if (exec.IsCompensationAboveThreshold(averageComp, 10m))
                         {
                             results.Add(new ExecutiveCompensationResultDto(
-                                nameAndPosition: $"{exec.Name}, {exec.Position}",
-                                totalCompensation: exec.TotalCompensation,
+                                nameAndPosition: $"{exec.NameAndPosition}",
+                                totalCompensation: exec.Total,
                                 industryAverage: averageComp
                             ));
-                        }
+                        }                        
                     }
+                    
                 }
                 finally
                 {

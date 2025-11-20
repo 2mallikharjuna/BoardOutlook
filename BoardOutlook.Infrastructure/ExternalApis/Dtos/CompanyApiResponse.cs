@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BoardOutlook.Infrastructure.ExternalApis.Dtos
 {
-    internal class CompanyApiResponse
+    public class CompanyApiResponse
     {
         public string Sector { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;

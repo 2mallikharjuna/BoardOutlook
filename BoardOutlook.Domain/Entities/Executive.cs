@@ -5,27 +5,36 @@ namespace BoardOutlook.Domain.Entities
     // Executive domain model
     public class Executive
     {
-        public string Cik { get; private set; }
-        public CompanySymbol Symbol { get; private set; }
-        public string CompanyName { get; private set; }
-        public Industry Industry { get; private set; }
-        public DateTime AcceptedDate { get; private set; }
-        public DateTime FilingDate { get; private set; }
-        public string NameAndPosition { get; private set; }
-        public int Year { get; private set; }
-        public decimal Salary { get; private set; }
-        public decimal Bonus { get; private set; }
-        public decimal? StockAward { get; private set; }
-        public decimal? IncentivePlanCompensation { get; private set; }
-        public decimal? AllOtherCompensation { get; private set; }
-        public decimal Total { get; private set; }
-        public string Url { get; private set; }
+        // Company & Filing Metadata
+        public string Cik { get; set; }                  // SEC Central Index Key
+        public CompanySymbol Symbol { get; set; }        // Stock ticker symbol
+        public string CompanyName { get; set; }          // Full company name
+        public string IndustryTitle { get; set; }        // Industry classification
+
+        // Filing Dates
+        public DateTime AcceptedDate { get; set; }       // Filing accepted date/time
+        public DateTime FilingDate { get; set; }         // Filing date
+
+        // Executive Info
+        public string NameAndPosition { get; set; }      // Combined name + title
+        public int Year { get; set; }                    // Reporting year
+
+        // Compensation Components
+        public decimal? Salary { get; set; }
+        public decimal? Bonus { get; set; }
+        public decimal? StockAward { get; set; }
+        public decimal? IncentivePlanCompensation { get; set; }
+        public decimal? AllOtherCompensation { get; set; }
+        public decimal Total { get; set; }               // Total compensation
+
+        // Source Link
+        public string Url { get; set; }                  // Link to original SEC filing
 
         public Executive(
             string cik,
             CompanySymbol symbol,
             string companyName,
-            Industry industry,
+            string industry,
             DateTime acceptedDate,
             DateTime filingDate,
             string nameAndPosition,
@@ -41,7 +50,7 @@ namespace BoardOutlook.Domain.Entities
             Cik = cik ?? throw new ArgumentNullException(nameof(cik));
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
             CompanyName = companyName ?? throw new ArgumentNullException(nameof(companyName));
-            Industry = industry ?? throw new ArgumentNullException(nameof(industry));
+            IndustryTitle = industry ?? throw new ArgumentNullException(nameof(industry));
             AcceptedDate = acceptedDate;
             FilingDate = filingDate;
             NameAndPosition = nameAndPosition ?? throw new ArgumentNullException(nameof(nameAndPosition));
@@ -55,6 +64,20 @@ namespace BoardOutlook.Domain.Entities
             Url = url ?? throw new ArgumentNullException(nameof(url));
         }
 
-        
+        /// <summary>
+        /// Determines if the executive's total compensation exceeds a given threshold percentage over the industry average.
+        /// </summary>
+        /// <param name="averageCompensation">Industry average compensation.</param>
+        /// <param name="thresholdPercentage">Threshold percentage (e.g., 10 for 10%).</param>
+        /// <returns>True if total compensation is above the threshold, otherwise false.</returns>
+        public bool IsCompensationAboveThreshold(decimal averageCompensation, decimal thresholdPercentage)
+        {
+            if (averageCompensation <= 0 || thresholdPercentage < 0) return false;
+
+            var threshold = averageCompensation * (1 + thresholdPercentage / 100);
+            return Total >= threshold;
+        }
+
+
     }
 }

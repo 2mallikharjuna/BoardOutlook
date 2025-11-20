@@ -2,7 +2,7 @@
 
 namespace BoardOutlook.Infrastructure.ExternalApis.Dtos
 {
-    internal class ExecutiveApiResponse
+    public class ExecutiveApiResponse
     {
         public string Cik { get; set; } = string.Empty;
         public string Symbol { get; set; } = string.Empty;

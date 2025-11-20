@@ -11,6 +11,7 @@ using BoardOutlook.Infrastructure.Repositories;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Registry;
+using System.Net;
 
 namespace BoardOutlook.Api.App_start
 {
@@ -79,24 +80,8 @@ namespace BoardOutlook.Api.App_start
             return services;
         }
 
-        ///configure the API settings
-        public static IServiceCollection ConfigurePollySettings(this IServiceCollection services)
-        {
-            var policyRegistry = new PolicyRegistry();
-
-            // Example Retry Policy
-            policyRegistry.Add("RetryPolicy", HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
-
-            // Example Circuit Breaker Policy
-            policyRegistry.Add("CircuitBreakerPolicy", HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
-
-            services.AddSingleton<IPolicyRegistry<string>>(policyRegistry);
-            return services;
-        }
+        
+        
 
 
     }
