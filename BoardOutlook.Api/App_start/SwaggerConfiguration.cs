@@ -17,7 +17,7 @@ namespace BoardOutlook.Api.App_start
         public static IApplicationBuilder EnableSwagger(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseSwagger()
-            .UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Teach Portal v1"));
+            .UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Board Outlook v1"));
 
             return app;
         }
