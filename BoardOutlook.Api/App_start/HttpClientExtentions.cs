@@ -31,7 +31,7 @@ namespace BoardOutlook.Api.App_start
                     });
 
 
-            // 2️⃣ Retry Policy — Only transient failures         
+            // Retry Policy — Only transient failures         
             var retryPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()                     // HttpRequestException, 5xx, 408
                 .OrResult(r => r.StatusCode == HttpStatusCode.TooManyRequests) // 429
