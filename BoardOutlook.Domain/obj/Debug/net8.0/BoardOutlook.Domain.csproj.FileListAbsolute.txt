@@ -1,0 +1,11 @@
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\bin\Debug\net8.0\BoardOutlook.Domain.deps.json
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\bin\Debug\net8.0\BoardOutlook.Domain.dll
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\bin\Debug\net8.0\BoardOutlook.Domain.pdb
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\BoardOutlook.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\BoardOutlook.Domain.AssemblyInfoInputs.cache
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\BoardOutlook.Domain.AssemblyInfo.cs
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\BoardOutlook.Domain.csproj.CoreCompileInputs.cache
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\BoardOutlook.Domain.dll
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\refint\BoardOutlook.Domain.dll
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\BoardOutlook.Domain.pdb
+D:\Test\BoardOutlook.Api\BoardOutlook.Domain\obj\Debug\net8.0\ref\BoardOutlook.Domain.dll

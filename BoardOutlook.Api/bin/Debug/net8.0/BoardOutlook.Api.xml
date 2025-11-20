@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BoardOutlook.Api</name>
+    </assembly>
+    <members>
+        <member name="T:BoardOutlook.Api.App_start.DependencyInjector">
+            <summary>
+            Dependency injector of all services
+            </summary>
+        </member>
+        <member name="M:BoardOutlook.Api.App_start.DependencyInjector.AddDependencies(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Extension method to add the dependencies
+            </summary>
+            <param name="services">Base services</param>
+            <param name="configuration">Base configuration</param>
+            <returns></returns>
+        </member>
+        <member name="M:BoardOutlook.Api.App_start.DependencyInjector.InjectDependencies(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Create a dependency injection
+            </summary>
+            <param name="services">Base services</param>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:BoardOutlook.Api.App_start.DependencyInjector.AppApiMiddlewares(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Applying the api middlewares
+            </summary>
+            <param name="builder"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BoardOutlook.Api.App_start.DependencyInjector.ConfigureApiSettings(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            configure the API settings
+        </member>
+        <member name="M:BoardOutlook.Api.App_start.DependencyInjector.ConfigurePollySettings(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            configure the API settings
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:BoardOutlook.Api.App_start.SwaggerConfiguration" -->
+        <member name="M:BoardOutlook.Api.App_start.SwaggerConfiguration.EnableSwagger(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Enable swagger for the project
+            </summary>
+            <param name="app"></param>
+            <param name="configuration"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BoardOutlook.Api.App_start.SwaggerConfiguration.ConfigureSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Configure the swagger
+            </summary>
+            <param name="services"></param>
+            <param name="configuration"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BoardOutlook.Api.Middleware.ApiReaderAuth">
+            <summary>
+            Authorize Request Reader Requirment
+            </summary>
+        </member>
+        <member name="T:BoardOutlook.Api.Middleware.ArtistsReaderRequirmentHandler">
+            <summary>
+            Artists Reader Requirment Handler
+            </summary>
+        </member>
+    </members>
+</doc>

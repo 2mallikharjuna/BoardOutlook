@@ -1,0 +1,26 @@
+[
+  {
+    "ContainingType": "BoardOutlook.Api.Controllers.ExecutivesController",
+    "Method": "Get",
+    "RelativePath": "api/companies/executives/compensation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "exchange",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BoardOutlook.Application.DTOs.Response.ExecutiveCompensationResultDto, BoardOutlook.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]

@@ -1,0 +1,63 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Board Outlook Api",
+    "description": "Board Outlook Portal Api",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/companies/executives/compensation": {
+      "get": {
+        "tags": [
+          "Executives"
+        ],
+        "parameters": [
+          {
+            "name": "exchange",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutiveCompensationResultDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExecutiveCompensationResultDto": {
+        "type": "object",
+        "properties": {
+          "nameAndPosition": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalCompensation": {
+            "type": "number",
+            "format": "double"
+          },
+          "industryAverage": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

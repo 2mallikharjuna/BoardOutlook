@@ -1,0 +1,6 @@
+@BoardOutlook.Api_HostAddress = http://localhost:5037
+
+GET {{BoardOutlook.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

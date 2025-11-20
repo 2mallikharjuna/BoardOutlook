@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "dXCmKkzQSCc=",
+  "success": true,
+  "projectFilePath": "D:\\Test\\BoardOutlook.Api\\BoardOutlook.Application\\BoardOutlook.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Udaya\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\microsoft.extensions.options\\10.0.0\\microsoft.extensions.options.10.0.0.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\microsoft.extensions.primitives\\10.0.0\\microsoft.extensions.primitives.10.0.0.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\polly\\8.6.4\\polly.8.6.4.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\polly.core\\8.6.4\\polly.core.8.6.4.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\serilog\\4.3.0\\serilog.4.3.0.nupkg.sha512",
+    "C:\\Users\\Udaya\\.nuget\\packages\\system.diagnostics.diagnosticsource\\10.0.0\\system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
