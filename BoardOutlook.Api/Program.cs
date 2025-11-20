@@ -35,6 +35,8 @@ namespace BoardOutlook.Api
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
+            // Use built-in exception handler middleware
+            app.UseExceptionHandler();
 
             app.MapHealthChecks("/health");
 
